@@ -73,7 +73,7 @@ function updateToDo(animate = false, elem = null) {
         // Check that the TODO is done or not?. if done then change the text-decoration.
         let i = 0;
         for (let item in parsedToDoObj) {
-            if (parsedToDoObj[item] == true) {
+            if (parsedToDoObj[item].active == true) {
                 if (document.getElementsByClassName("TODO_TXT")[i].value == Object.keys(parsedToDoObj)[i]) {
                     document.getElementsByClassName("TODO_TXT")[i].style.textDecoration = "line-through";
                     document.getElementsByClassName("TODO_TXT")[i].nextElementSibling.innerHTML = `<i class="fa fa-edit" onclick="editTODO(this)"></i><i class="fa fa-trash" onclick="deleteTODO(this)"></i><i class="fa fa-times-circle" onclick="NotDoneTODO(this.parentElement.parentElement)" style="font-size: 18px;"></i>`;
@@ -173,7 +173,7 @@ function ConfirmEdit(e) {
 function DoneTODO(e) {
     let txt = e.querySelector("input");
     let parsedToDoObj = JSON.parse(localStorage.getItem("myToDo"));
-    parsedToDoObj[txt.value] = true;
+    parsedToDoObj[txt.value].active = true;
     localStorage.setItem("myToDo", JSON.stringify(parsedToDoObj));
     updateToDo();
 }
@@ -182,7 +182,7 @@ function DoneTODO(e) {
 function NotDoneTODO(e) {
     let txt = e.querySelector("input");
     let parsedToDoObj = JSON.parse(localStorage.getItem("myToDo"));
-    parsedToDoObj[txt.value] = false;
+    parsedToDoObj[txt.value].active = false;
     localStorage.setItem("myToDo", JSON.stringify(parsedToDoObj));
     updateToDo();
 }
