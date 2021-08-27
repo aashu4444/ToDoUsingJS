@@ -53,7 +53,7 @@ function updateToDo(animate = false, elem = null) {
             if (animate != true) {
                 style = "transform:translateX(0%);";
             }
-            toDoHTML += `<li class="ToDoItem" style="--i: ${index};${style}"><input class="TODO_TXT" type="text" value="${text}" readonly="" style="
+            toDoHTML += `<li class="ToDoItem" ondragover="onDragOver(this)" ondragend="onDragEnd(this)" draggable="true" style="--i: ${index};grid-row:${parsedToDoObj[text].gridRow};${style}"><input class="TODO_TXT" type="text" value="${text}" readonly="" style="
                             background: transparent;
                             border: none;
                             outline: none;
@@ -94,14 +94,19 @@ form.addEventListener("submit", e => {
     // If there are no items in localStorage create a new array and set it on localStorage
     if (localStorage.getItem("myToDo") == null) {
         let obj = {}
-        obj[TODO_INP.value] = false;
+        obj[TODO_INP.value] = {"active":false, "gridRow": "1 / 2"};
         localStorage.setItem("myToDo", JSON.stringify(obj))
     }
 
     // if there are already items in localStorage then parse it and add the TODO, then set it on localStorage
     else {
         let parsedToDoObj = JSON.parse(localStorage.getItem("myToDo"));
-        parsedToDoObj[TODO_INP.value] = false;
+        const lastTodo = Object.keys(parsedToDoObj).length != 0 ? parsedToDoObj[Object.keys(parsedToDoObj)[Object.keys(parsedToDoObj).length - 1]] : {gridRow: "0 / 1"}
+
+        const gridRow = (Number(lastTodo.gridRow.split(" / ")[0]) + 1) + " / " + (Number(lastTodo.gridRow.split(" / ")[1])+1)
+        parsedToDoObj[TODO_INP.value] = {"active":false, "gridRow": gridRow};
+        
+
         localStorage.setItem("myToDo", JSON.stringify(parsedToDoObj))
     }
 
@@ -181,3 +186,40 @@ function NotDoneTODO(e) {
     localStorage.setItem("myToDo", JSON.stringify(parsedToDoObj));
     updateToDo();
 }
+
+// Making TODO item draggable
+let TODO_ITEMS = document.querySelectorAll(".ToDoItem")
+let MAIN_ELEM = ``;
+
+let overed = null
+
+function onDragEnd(e){
+    let currentOverElm = overed
+
+    while (currentOverElm.tagName != "LI"){
+        currentOverElm = currentOverElm.parentElement;
+    }
+
+    overed = currentOverElm
+
+    if (overed.tagName == "LI"){
+        const order = Array.from(document.querySelectorAll("li.ToDoItem")).indexOf(overed) + 1
+        overedGridRow = overed.style.gridRow
+        currentElmGridRow = e.style.gridRow
+
+        let Todos = JSON.parse(localStorage.getItem("myToDo"))
+        
+        Todos[e.querySelector(".TODO_TXT").value].gridRow = overedGridRow;
+        Todos[overed.querySelector(".TODO_TXT").value].gridRow = currentElmGridRow;
+
+        localStorage.setItem("myToDo", JSON.stringify(Todos));
+        
+        updateToDo(false);
+    }
+}
+
+function onDragOver(e){
+    overed = e;
+}
+
+

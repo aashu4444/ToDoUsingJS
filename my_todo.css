@@ -5,6 +5,15 @@
     font-family: Poppins;
 }
 
+::-webkit-scrollbar{
+    width: 10px;
+    background-color: #f1427c;
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: #b40a42;
+}
+
 body{
     background-color: rgb(231, 88, 136);
     display: flex;
@@ -40,9 +49,14 @@ body{
     text-align: center;
 }
 
+.ToDoItems{
+    max-height: 75vh;
+    overflow: auto;
+}
+
 .ToDoItems ul{
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: auto;
     color: #f3eeee;
 }
 
